@@ -27,12 +27,14 @@ export const registerValidation = [
     .withMessage("Invalid role"),
 
   body("degree")
-    .isIn(DEGREE)
-    .withMessage("Invalid degree"),
+  .optional()
+  .isIn(DEGREE)
+  .withMessage("Invalid degree"),
 
   body("semester")
-    .isInt({ min: 1 })
-    .withMessage("Invalid semester"),
+  .optional()
+  .isInt({ min: 1 })
+  .withMessage("Invalid semester"),
 
   body("gender")
     .isIn(GENDER)

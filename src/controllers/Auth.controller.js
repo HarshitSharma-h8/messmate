@@ -2,17 +2,15 @@ import bcrypt from "bcryptjs";
 import User from "../models/User.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
-import asyncHandler from "../utils/asyncHandler.js";
+import asyncHandler from "../utils/AsyncHandler.js";
 import generateOTP from "../utils/OtpGenerator.js";
 import sendEmail from "../utils/EmailService.js";
 import { generateToken } from "../utils/TokenService.js";
 import crypto from "crypto";
 
-
-
 /**
  * Registers a new user in the system.
- * 
+ *
  * @function
  * @async
  * @param {Object} req - Express request object.
@@ -32,7 +30,6 @@ import crypto from "crypto";
  * @returns {void} Sends a success response with OTP information.
  */
 export const registerUser = asyncHandler(async (req, res) => {
-
   const {
     name,
     registerNumber,
@@ -44,6 +41,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     semester,
     gender,
     messId,
+    adminSecret, // added
   } = req.body;
 
   // Check if user already exists
@@ -55,32 +53,57 @@ export const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "User already exists");
   }
 
+  // ---------------- ROLE SECURITY ----------------
+
+  let finalRole ; // default safe role
+
+  // Student-specific validation
+  if (role === "STUDENT") {
+    if (!degree || !semester) {
+      throw new ApiError(400, "Degree and semester are required for students");
+    }
+    finalRole = "STUDENT";
+  }
+
+  if (role === "ADMIN") {
+    if (!adminSecret) {
+      throw new ApiError(403, "Admin secret key required");
+    }
+
+    if (adminSecret !== process.env.ADMIN_SECRET) {
+      throw new ApiError(403, "Invalid admin secret key");
+    }
+
+    finalRole = "ADMIN";
+  }
+
+  // ------------------------------------------------
+
   // Generate OTP
   const otp = generateOTP();
+  const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
-  const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-
-  // Send email FIRST (IMPORTANT)
+  // Send email FIRST
   await sendEmail(
     email,
     "Verify Your Email - Mess Management System",
-    `Your OTP is ${otp}. It will expire in 10 minutes.`
+    `Your OTP is ${otp}. It will expire in 10 minutes.`,
   );
 
   // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Hash OTP before saving
+  // Hash OTP
   const hashedOtp = await bcrypt.hash(otp, 10);
 
-  // Save user ONLY after email success
+  // Save user
   await User.create({
     name,
     registerNumber,
     email,
     mobile,
     passwordHash: hashedPassword,
-    role,
+    role: finalRole, // IMPORTANT
     degree,
     semester,
     gender,
@@ -90,16 +113,14 @@ export const registerUser = asyncHandler(async (req, res) => {
     isVerified: false,
   });
 
-  res.status(201).json(
-    new ApiResponse(201, "Registration successful. OTP sent to email.")
-  );
+  res
+    .status(201)
+    .json(new ApiResponse(201, "Registration successful. OTP sent to email."));
 });
-
-
 
 /**
  * Verifies the OTP for email verification.
- * 
+ *
  * @function
  * @async
  * @param {Object} req - Express request object.
@@ -111,7 +132,6 @@ export const registerUser = asyncHandler(async (req, res) => {
  * @returns {void} Sends a success response upon successful verification.
  */
 export const verifyOtp = asyncHandler(async (req, res) => {
-
   const { email, otp } = req.body;
 
   const user = await User.findOne({ email });
@@ -146,16 +166,12 @@ export const verifyOtp = asyncHandler(async (req, res) => {
 
   await user.save();
 
-  res.status(200).json(
-    new ApiResponse(200, "Email verified successfully")
-  );
+  res.status(200).json(new ApiResponse(200, "Email verified successfully"));
 });
-
-
 
 /**
  * Logs in a user by validating credentials and generating a JWT token.
- * 
+ *
  * @function
  * @async
  * @param {Object} req - Express request object.
@@ -167,7 +183,6 @@ export const verifyOtp = asyncHandler(async (req, res) => {
  * @returns {void} Sends a success response with the JWT token and user details.
  */
 export const loginUser = asyncHandler(async (req, res) => {
-
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
@@ -201,15 +216,13 @@ export const loginUser = asyncHandler(async (req, res) => {
         email: user.email,
         role: user.role,
       },
-    })
+    }),
   );
 });
 
-
-
 /**
  * Logs out a user. For JWT-based authentication, this is a placeholder for future enhancements.
- * 
+ *
  * @function
  * @async
  * @param {Object} req - Express request object.
@@ -217,20 +230,15 @@ export const loginUser = asyncHandler(async (req, res) => {
  * @returns {void} Sends a success response indicating logout.
  */
 export const logoutUser = asyncHandler(async (req, res) => {
-
   // For JWT, logout is handled client-side by removing token
   // This endpoint exists for consistency and future upgrades (blacklisting)
 
-  res.status(200).json(
-    new ApiResponse(200, "Logout successful")
-  );
+  res.status(200).json(new ApiResponse(200, "Logout successful"));
 });
-
-
 
 /**
  * Sends a password reset link to the user's email.
- * 
+ *
  * @function
  * @async
  * @param {Object} req - Express request object.
@@ -241,7 +249,6 @@ export const logoutUser = asyncHandler(async (req, res) => {
  * @returns {void} Sends a success response with password reset link information.
  */
 export const forgotPassword = asyncHandler(async (req, res) => {
-
   const { email } = req.body;
 
   const user = await User.findOne({ email });
@@ -269,18 +276,17 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   await sendEmail(
     email,
     "Password Reset - Mess Management",
-    `Click here to reset your password:\n\n${resetLink}\n\nThis link expires in 15 minutes.`
+    `Click here to reset your password:\n\n${resetLink}\n\nThis link expires in 15 minutes.`,
   );
 
-  res.status(200).json(
-    new ApiResponse(200, "Password reset link sent to email")
-  );
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Password reset link sent to email"));
 });
-
 
 /**
  * Resets the user's password using a valid reset token.
- * 
+ *
  * @function
  * @async
  * @param {Object} req - Express request object.
@@ -292,14 +298,10 @@ export const forgotPassword = asyncHandler(async (req, res) => {
  * @returns {void} Sends a success response upon successful password reset.
  */
 export const resetPassword = asyncHandler(async (req, res) => {
-
   const { token, newPassword } = req.body;
 
   // Hash incoming token
-  const hashedToken = crypto
-    .createHash("sha256")
-    .update(token)
-    .digest("hex");
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
   const user = await User.findOne({
     resetPasswordToken: hashedToken,
@@ -321,9 +323,5 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
   await user.save();
 
-  res.status(200).json(
-    new ApiResponse(200, "Password reset successful")
-  );
+  res.status(200).json(new ApiResponse(200, "Password reset successful"));
 });
-
-

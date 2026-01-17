@@ -43,12 +43,10 @@ const userSchema = new mongoose.Schema(
     degree: {
       type: String,
       enum: DEGREE,
-      required: true,
     },
 
     semester: {
       type: Number,
-      required: true,
       min: 1,
     },
 

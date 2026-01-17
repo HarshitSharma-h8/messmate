@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import errorHandler from "./middlewares/error.middleware.js";
 import authRoutes from "./routes/Auth.routes.js";
+import messRoutes from "./routes/Mess.routes.js";
+import eventRoutes from "./routes/Event.routes.js";
 
 
 
@@ -17,6 +19,10 @@ app.use(express.json());
 
 /* ---------- Routes ---------- */
 app.use("/api/v1/auth", authRoutes);
+
+app.use("/api/v1/mess", messRoutes);
+
+app.use("/api/v1/events", eventRoutes);
 
 
 
