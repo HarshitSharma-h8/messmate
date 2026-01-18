@@ -6,6 +6,25 @@ import checkAndExpireEvent from "../utils/EventExpiryChecker.js";
 
 
 
+
+
+
+/**
+ * @function createEvent
+ * @description Creates a new event for the mess. Validates input data, checks for active events, and ensures slot timings are valid.
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} req.body - Request body containing event details.
+ * @param {string} req.body.title - Title of the event.
+ * @param {string} req.body.startTime - Start time of the event in ISO format.
+ * @param {string} req.body.endTime - End time of the event in ISO format.
+ * @param {Array} req.body.slots - Array of slots for the event.
+ * @param {Object} req.user - User object attached to the request.
+ * @param {string} req.user.messId - Mess ID associated with the user.
+ * @param {Object} res - Express response object.
+ * @throws {ApiError} If validation fails or an active event already exists.
+ * @returns {void} Sends a JSON response with the created event details.
+ */
 export const createEvent = asyncHandler(async (req, res) => {
 
   const { title, startTime, endTime, slots } = req.body;
@@ -85,6 +104,18 @@ export const createEvent = asyncHandler(async (req, res) => {
 });
 
 
+
+/**
+ * @function getActiveEvent
+ * @description Fetches the currently active event for the mess. Automatically expires the event if it has ended.
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} req.user - User object attached to the request.
+ * @param {string} req.user.messId - Mess ID associated with the user.
+ * @param {Object} res - Express response object.
+ * @throws {ApiError} If no active event is found.
+ * @returns {void} Sends a JSON response with the active event details.
+ */
 export const getActiveEvent = asyncHandler(async (req, res) => {
 
   const messId = req.user.messId;

@@ -55,7 +55,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   // ---------------- ROLE SECURITY ----------------
 
-  let finalRole ; // default safe role
+  let finalRole; // default safe role
 
   // Student-specific validation
   if (role === "STUDENT") {
@@ -205,6 +205,8 @@ export const loginUser = asyncHandler(async (req, res) => {
     id: user._id,
     role: user.role,
     messId: user.messId,
+    degree: user.degree,
+    semester: user.semester,
   });
 
   res.status(200).json(

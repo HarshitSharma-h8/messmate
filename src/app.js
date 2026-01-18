@@ -4,6 +4,8 @@ import errorHandler from "./middlewares/error.middleware.js";
 import authRoutes from "./routes/Auth.routes.js";
 import messRoutes from "./routes/Mess.routes.js";
 import eventRoutes from "./routes/Event.routes.js";
+import tokenRoutes from "./routes/Token.routes.js";
+import adminRoutes from "./routes/Admin.routes.js";
 
 
 
@@ -23,6 +25,10 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/mess", messRoutes);
 
 app.use("/api/v1/events", eventRoutes);
+
+app.use("/api/v1/tokens", tokenRoutes);
+
+app.use("/api/v1/admin", adminRoutes);
 
 
 

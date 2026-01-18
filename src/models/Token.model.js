@@ -14,9 +14,14 @@ const tokenSchema = new mongoose.Schema(
       required: true,
     },
 
-    used: {
-      type: Boolean,
-      default: false,
+    status: {
+      type: String,
+      enum: ["UNUSED", "USED", "EXPIRED"],
+      default: "UNUSED",
+    },
+
+    expiresAt: {
+      type: Date, // when event ends
     },
   },
   { timestamps: true }

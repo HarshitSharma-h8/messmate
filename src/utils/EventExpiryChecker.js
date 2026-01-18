@@ -11,7 +11,16 @@ const checkAndExpireEvent = async (event) => {
     event.status = "ENDED";
     await event.save();
 
-    return event;
+    // Expire all unused tokens of this event
+    await Token.updateMany(
+      {
+        eventId: event._id,
+        status: "UNUSED",
+      },
+      {
+        status: "EXPIRED",
+      }
+    );
   }
 
   return event;
