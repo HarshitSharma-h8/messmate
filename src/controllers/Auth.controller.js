@@ -8,6 +8,7 @@ import sendEmail from "../utils/EmailService.js";
 import { generateToken } from "../utils/TokenService.js";
 import crypto from "crypto";
 
+
 /**
  * Registers a new user in the system.
  *
@@ -273,7 +274,8 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 
   await user.save();
 
-  const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
+  const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+;
 
   await sendEmail(
     email,

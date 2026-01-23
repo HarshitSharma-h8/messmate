@@ -6,6 +6,8 @@ import messRoutes from "./routes/Mess.routes.js";
 import eventRoutes from "./routes/Event.routes.js";
 import tokenRoutes from "./routes/Token.routes.js";
 import adminRoutes from "./routes/Admin.routes.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 
 
