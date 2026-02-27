@@ -207,6 +207,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     role: user.role,
     messId: user.messId,
     degree: user.degree,
+    registerNumber : user.registerNumber,
     semester: user.semester,
   });
 
@@ -218,6 +219,9 @@ export const loginUser = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        registerNumber : user.registerNumber,
+        degree: user.degree,
+        semester : user.semester
       },
     }),
   );

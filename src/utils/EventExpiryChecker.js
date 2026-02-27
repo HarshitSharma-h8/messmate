@@ -1,4 +1,5 @@
 import Event from "../models/Event.model.js";
+import Token from "../models/Token.model.js";
 
 const checkAndExpireEvent = async (event) => {
 

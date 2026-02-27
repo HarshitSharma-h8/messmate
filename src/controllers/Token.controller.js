@@ -134,7 +134,7 @@ export const getMyToken = asyncHandler(async (req, res) => {
         endTime: matchingSlot.endTime,
       },
 
-      status: token.used ? "USED" : "UNUSED",
+      status: token.status,
       generatedAt: token.createdAt,
     }),
   );

@@ -19,7 +19,10 @@ const tokenSchema = new mongoose.Schema(
       enum: ["UNUSED", "USED", "EXPIRED"],
       default: "UNUSED",
     },
-
+    usedAt: { 
+      type: Date, 
+      default: null 
+    },
     expiresAt: {
       type: Date, // when event ends
     },
