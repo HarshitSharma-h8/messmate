@@ -72,3 +72,6 @@ coverage/
 # -----------------------
 tmp/
 temp/
+
+# Ignore all json files in the root directory
+*.json
