@@ -6,7 +6,7 @@ import {
   scanMovement,
 } from "../controllers/Movement.controller.js";
 import authMiddleware from "../middlewares/auth.middleware.js";
-import  authorizeRoles  from "../middlewares/role.middleware.js";
+import  {authorizeRoles}  from "../middlewares/role.middleware.js";
 
 const router = Router();
 
