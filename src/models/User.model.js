@@ -56,6 +56,12 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
+    hostelId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Hostel",
+      required: true,
+    },
+
     messId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Mess",
@@ -83,7 +89,7 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const User = mongoose.model("User", userSchema);

@@ -6,6 +6,7 @@ import messRoutes from "./routes/Mess.routes.js";
 import eventRoutes from "./routes/Event.routes.js";
 import tokenRoutes from "./routes/Token.routes.js";
 import adminRoutes from "./routes/Admin.routes.js";
+import movementRoutes from "./routes/Movement.routes.js"
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -38,6 +39,8 @@ app.use("/api/v1/events", eventRoutes);
 app.use("/api/v1/tokens", tokenRoutes);
 
 app.use("/api/v1/admin", adminRoutes);
+
+app.use("api/v1/movement", movementRoutes)
 
 
 
